@@ -1,36 +1,51 @@
 #include "sort.h"
 
 /**
- * insertion_sort_list - sorts a doubly linked list of integers in ascending
- * order using the Insertion sort algorithm
- * @list: Double pointer to the head of the linked list
- *
- * Return: void
+ * insertion_sort_list - an insert sort
+ * implementation with doubly linked lists.
+ * @list: head to the doubly linked list
+ * Return: Always void
  */
 void insertion_sort_list(listint_t **list)
 {
-	listint_t *swap_node, *next_swap;
+	listint_t *second_elem, *cur, *stitch_front, *stitch_back;
+	int swap_tick = 1;
 
-	if (list == NULL || *list == NULL)
+	if (list == NULL || (*list) == NULL || (*list)->next == NULL)
 		return;
-	swap_node = (*list)->next;
-	while (swap_node != NULL)
-	{
-		next_swap = swap_node->next;
-		while (swap_node->prev != NULL && swap_node->prev->n > swap_node->n)
+	cur = *list;
+	while (swap_tick == 1 && cur)
+		for (cur = *list, swap_tick = 0; cur && cur->next; cur = cur->next)
 		{
-			swap_node->prev->next = swap_node->next;
-			if (swap_node->next != NULL)
-				swap_node->next->prev = swap_node->prev;
-			swap_node->next = swap_node->prev;
-			swap_node->prev = swap_node->next->prev;
-			swap_node->next->prev = swap_node;
-			if (swap_node->prev == NULL)
-				*list = swap_node;
-			else
-				swap_node->prev->next = swap_node;
-			print_list(*list);
+			if (cur->n > cur->next->n)		/* Being the swapped */
+			{
+				second_elem = cur->next;	/* Picked up the bad element */
+				/* Disconnecting before moving */
+				stitch_front = second_elem->next;	/* -> ||| */
+
+				stitch_back = second_elem->prev;	/* ||| <- */
+				second_elem->prev->next = stitch_front;
+				if (second_elem->next)
+					second_elem->next->prev = stitch_back;
+
+				for (; second_elem->n > cur->n; cur = cur->prev)
+					if (!cur->prev)
+						break;
+				/* NODE TO BE MOVED IN THE MIDDLE */
+				if (cur->prev)
+				{
+					cur->prev->next = second_elem, second_elem->next = cur;
+					second_elem->prev = cur->prev, cur->prev = second_elem;
+				}
+				/* NODE TO BECOME THE HEAD */
+				else
+				{
+					second_elem->prev = NULL, second_elem->next = cur;
+					cur->prev = second_elem, *list = second_elem;
+				}
+				print_list(*list), swap_tick = 1;
+			}
+			if (swap_tick == 1)
+				break;
 		}
-		swap_node = next_swap;
-	}
 }
