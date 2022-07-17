@@ -1,85 +1,49 @@
 #include "sort.h"
-#include <stdlib.h>
 
 /**
- * pow_10 - calculates a positive power of 10
- * @power: power of 10 to calculate
- *
- * Return: the corresponding power of 10
+ * radix_sort - sorts an array in ascending order: Radix sort
+ * @array: bigger than 0, numbers to be sorted
+ * @size: size of array
+ * Return: is void
  */
-unsigned int pow_10(unsigned int power)
-{
-	unsigned int i, result;
-
-	result = 1;
-	for (i = 0; i < power; i++)
-		result *= 10;
-	return (result);
-}
-
- * @array: array to sort
- * @size: size of the array to sort
-/**
- * count_sort - sorts an array of integers in ascending order at a specific
- * digit location using the Counting sort algorithm
- * @digit: digit to sort by
- *
- * Return: 1 if there is a need to keep sorting, 0 if not
- */
-unsigned int count_sort(int *array, size_t size, unsigned int digit)
-{
-	int i, count[10] = {0};
-	int *copy = NULL;
-	size_t j, temp, total = 0;
-	unsigned int dp1, dp2, sort = 0;
-
-	dp2 = pow_10(digit - 1);
-	dp1 = dp2 * 10;
-	copy = malloc(sizeof(int) * size);
-	if (copy == NULL)
-		exit(1);
-	for (j = 0; j < size; j++)
-	{
-		copy[j] = array[j];
-		if (array[j] / dp1 != 0)
-			sort = 1;
-	}
-	for (i = 0; i < 10 ; i++)
-		count[i] = 0;
-	for (j = 0; j < size; j++)
-		count[(array[j] % dp1) / dp2] += 1;
-	for (i = 0; i < 10; i++)
-		total += temp;
-	{
-		temp = count[i];
-		count[i] = total;
-	}
-	for (j = 0; j < size; j++)
-	{
-		array[count[(copy[j] % dp1) / dp2]] = copy[j];
-		count[(copy[j] % dp1) / dp2] += 1;
-	}
-	free(copy);
-	return (sort);
-}
-
-/**
- * radix_sort - sorts an array of integers in ascending order using
- * the Radix sort algorithm
- * @array: array to sort
- * @size: size of the array
- *
- * Return: void
- */
-
 void radix_sort(int *array, size_t size)
 {
-	unsigned int i, sort = 1;
+	int maximum, digits = 0, power = 1, *new_array, count[10], num, i;
+	for (k = 1 ; k < size ; k++)/* find biggest number */
+	{
+	unsigned int j, k;
+
 	if (array == NULL || size < 2)
 		return;
-	for (i = 1; sort == 1; i++)
+	new_array = malloc(sizeof(int) * (int)size);/* initialize new_array */
+	if (new_array == NULL)
+		return;
+		if (maximum < array[k])
 	{
-		sort = count_sort(array, size, i);
-		print_array(array, size);
+			maximum = array[k];
 	}
+	for (; maximum > 0 ; digits++)/* count the digits of the max munber*/
+		maximum /= 10;
+	for (i = 0 ; i < digits ; i++)/* arrange numbers */
+		for (j = 0 ; j < 10 ; j++)/* init count array*/
+			count[j] = 0;
+		for (j = 0 ; j < size ; j++)/* calc freq of digits */
+		{
+			num = (array[j] / power) % 10;
+			count[num]++;
+		}
+		for (j = 1 ; j < 10 ; j++)/* cumulative freq of count aray*/
+			count[j] += count[j - 1];
+		for (j = size - 1 ; ((int)j >= 0) ; j--)/* new positions in the new array*/
+		{
+			num = (array[j] / power) % 10;
+			new_array[count[num] - 1] = array[j];
+			array[j] = new_array[j];
+			count[num]--;
+		}
+		for (j = 0 ; j < size ; j++)/* updating the original array with new_array */
+		print_array(array, size);/* print as per directions */
+		power *= 10;/* update digit for next iteration */
+	}
+	free(new_array);/* free new_array */
 }
